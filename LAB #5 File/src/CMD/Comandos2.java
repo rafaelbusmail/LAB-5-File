@@ -70,22 +70,24 @@ public class Comandos2 extends Comandos1 {
         return LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss"));
     }
 
-    public String escribirTexto(String nombre, String texto) {
+    public String leerTexto(String nombre) {
         File target = new File(pathActual, nombre);
 
         if (!target.exists()) {
             return "El archivo no existe.";
         }
 
-        try (FileWriter fw = new FileWriter(target, false);
-             PrintWriter pw = new PrintWriter(fw)) {
+        StringBuilder contenido = new StringBuilder();
 
-            pw.print(texto);
-            return "Texto escrito correctamente.";
-
+        try (BufferedReader br = new BufferedReader(new FileReader(target))) {
+            String linea;
+            while ((linea = br.readLine()) != null) {
+                contenido.append(linea).append("\n");
+            }
         } catch (IOException e) {
-            return "Error al escribir.";
+            return "Error al leer.";
         }
+
+        return contenido.toString();
     }
-    
 }
