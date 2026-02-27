@@ -24,6 +24,10 @@ public class CMDGUI extends JFrame {
     private final JTextArea area;
     private int inicioEntrada = 0;
     private final Comandos2 comando;
+    
+    private boolean modoEscritura = false;   
+    private String archivoActualEscritura = null;
+    private StringBuilder bufferEscritura = new StringBuilder(); 
 
     public CMDGUI() {
         super("CMD JEREMY - RAFAEL - DIEGO");
@@ -109,6 +113,24 @@ public class CMDGUI extends JFrame {
         if (raw == null || raw.isEmpty()) {
             return;
         }
+        
+        // 1️⃣ Si estamos en modo escritura, todo lo que se escriba va al buffer
+    if (modoEscritura) {
+        if ("EXIT".equals(raw)) {
+            // Terminar escritura y guardar en el archivo
+            String msg = comando.escribirTexto(archivoActualEscritura, bufferEscritura.toString());
+            appendText(msg + "\n");
+
+            // Reset modo escritura
+            modoEscritura = false;
+            archivoActualEscritura = null;
+            bufferEscritura.setLength(0);
+        } else {
+            // Agregar línea al buffer
+            bufferEscritura.append(raw).append(System.lineSeparator());
+        }
+        return; // no procesar como comando normal
+    }
 
         String[] parts = raw.split("\\s+");
         String cmd = parts[0].toLowerCase();
