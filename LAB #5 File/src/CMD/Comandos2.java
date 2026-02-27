@@ -4,10 +4,11 @@
  */
 package CMD;
 
+
 /**
  *
  * @author jerem
  */
-public class Comandos2 {
-    
+public class Comandos2 extends Comandos1{
+  
 }
