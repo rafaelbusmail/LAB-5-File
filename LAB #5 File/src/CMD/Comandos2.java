@@ -4,82 +4,88 @@
  */
 package CMD;
 
+import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
-import java.io.File;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  *
  * @author jerem
  */
-public class Comandos2 extends Comandos1{
-  public Comandos2(String pathInicial){
-      super(pathInicial);
-  }
-  public String retroceder(){
-      File dirActual = new File(getPathActual());
-      File dirPadre = dirActual.getParentFile();
-      //validacion para cuando no hay a donde retroceder
-      if(dirPadre == null){
-      return "ERROR: Ya se encuentra en el directorio principal";
-  }
-     if(!dirPadre.exists()){
-         return "ERROR: El directorio padre no existe";
-     }
+
+public class Comandos2 extends Comandos1 {
+
+    public Comandos2(String pathInicial) {
+        super(pathInicial);
+    }
+
+    public boolean cdBack() {
+        File padre = pathActual.getParentFile();
+        if (padre == null) {
+            return false;
+        }
+        pathActual = padre;
+        return true;
+    }
+
+    public String dir(String nombre) {
+        File archivoDir;
+
+        if (nombre == null || nombre.trim().isEmpty() || ".".equals(nombre)) {
+            archivoDir = pathActual;
+        } else {
+            archivoDir = new File(pathActual, nombre);
+        }
+
+        if (!archivoDir.exists() || !archivoDir.isDirectory()) {
+            return "No es un directorio válido.";
+        }
+
+        StringBuilder contenido = new StringBuilder();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+        File[] hijos = archivoDir.listFiles();
+        if (hijos != null) {
+            for (File child : hijos) {
+                String fecha = sdf.format(new Date(child.lastModified()));
+                contenido.append(fecha)
+                         .append("  ")
+                         .append(child.isDirectory() ? "<DIR> " : "FILE ")
+                         .append(child.getName())
+                         .append("\n");
+            }
+        }
+
+        return contenido.toString();
+    }
+
+    public String date() {
+        return LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+    }
+
+    public String time() {
+        return LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss"));
+    }
+
+    public String escribirTexto(String nombre, String texto) {
+        File target = new File(pathActual, nombre);
+
+        if (!target.exists()) {
+            return "El archivo no existe.";
+        }
+
+        try (FileWriter fw = new FileWriter(target, false);
+             PrintWriter pw = new PrintWriter(fw)) {
+
+            pw.print(texto);
+            return "Texto escrito correctamente.";
+
+        } catch (IOException e) {
+            return "Error al escribir.";
+        }
+    }
     
-      return cd("..");
-  }
-  public String dir(){
-      File dirActual = new File(getPathActual());
-      File [] entradas = dirActual.listFiles();
-      String resultado = " Directorio de " + getPathActual() + "\n\n";
-      
-      if(entradas == null || entradas.length == 0){
-          resultado = resultado + "  (directorio vacio)\n";
-          return resultado;
-      }
-      int carpetasEncontradas = 0;
-      int archivosEncontrados = 0;
-      
-      for (int i = 0; i < entradas.length; i++) {
-          File entrada = entradas[i];
-          
-          if(entrada.isDirectory()){
-              resultado = resultado + " <DIR>  " + entrada.getName() + "\n";
-              carpetasEncontradas = carpetasEncontradas + 1;
-          }
-      }
-      
-       //propablemente el que recorre el posible array de Archivos heredadas de comandos1
-       for (int i = 0; i < entradas.length; i++) {
-          File entrada = entradas[i];
-         
-          if (entrada.isFile()) {
-              resultado = resultado + "      " + entrada.getName() + "  ("+ entrada.length() + " bytes)\n";
-              archivosEncontrados = archivosEncontrados + 1;
-               
-           }
-      }
-       // si no se encontro nada avisa que el directorio esta vacio
-       if(carpetasEncontradas == 0 && archivosEncontrados == 0){
-           resultado = resultado + " (Directorio Vacio)\n";
-       }
-       // mensaje final
-       resultado = resultado + "\n " + carpetasEncontradas + " carpeta(s)  "+ archivosEncontrados + " archivo(s)";
-       
-      
-      return resultado;  
-  }
-  public String date(){
-      // obtiene la fecha actual y la formatea en espaniol
-      String fecha = new SimpleDateFormat("EEEE dd/MM/yyyy", new Locale("es","ES")).format(new Date());
-      
-      return " La fecha actual es: " + fecha;
-  }
-  public String time(){
-      //Obtiene la hora actual en formato de 24 horas
-      String hora = new SimpleDateFormat("HH:mm:ss").format(new Date());
-      return " La hora del sistema es: " + hora;
-  }
 }
