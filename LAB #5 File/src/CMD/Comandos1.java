@@ -1,27 +1,51 @@
-package CMD;
-import java.io.IOException;
 import java.io.File;
+import java.io.IOException;
 
 public class Comandos1 {
     
-    private File carpetaActual;
-    public Comandos1(String rutaInicial) {
-        this.carpetaActual = new File(rutaInicial);
-        if (!carpetaActual.exists()) {
-            carpetaActual.mkdirs();
+    private File pathActual;
+    
+    public Comandos1(String pathInicial) {
+        this.pathActual = new File(pathInicial);
+        if (!pathActual.exists()) {
+            pathActual.mkdirs();
         }
-        
     }
     
-    public String getCarpetaActual() {
-        return carpetaActual.getAbsolutePath();
+    public String getPathActual() {
+        return pathActual.getAbsolutePath();
     }
     
-    public String mkdir(String nombreCarpeta) {
-        return;
+    public String mkdir(String nombre) {
+        try {
+            if (nombre == null || nombre.trim().isEmpty()) {
+                return "Error: nombre no valido.";
+            }
+            
+            if (pathActual == null || !pathActual.exists() || !pathActual.isDirectory()) {
+                return "Error: ruta actual no valida.";
+            }
+            
+            File objetivo = new File(pathActual, nombre);
+            
+            if (objetivo.exists()) {
+                return "Ya existe un subdirectorio o archivo " + nombre + ".";
+            }
+            
+            if (objetivo.mkdir()) {
+                return "Carpeta creada: " + nombre;
+            } else {
+                return "Error al crear la carpeta " + nombre + ".";
+            }
+            
+        } catch (SecurityException e) {
+            return "Acceso denegado.";
+        } catch (Exception e) {
+            return "Error: " + e.getMessage();
+        }
     }
     
-    public String mfile (String nombreArchivo) {
+    public String mfile(String nombre) {
         
     }
     
@@ -29,7 +53,11 @@ public class Comandos1 {
         
     }
     
-    public String cd (String nombreCarpeta) {
+    private boolean borrarRecursivo(File file) {
+       
+    }
+    
+    public String cd(String nombre) {
         
     }
 }
