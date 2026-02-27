@@ -82,14 +82,72 @@ public class Comandos1 {
     }
     
     public String rm(String nombre) {
+       
+        try {
+            if (nombre == null || nombre.trim().isEmpty()) {
+                return "Error: nombre no valido.";
+            }
+            
+            if (pathActual == null) {
+                return "Error: ruta actual no valida.";
+            }
+            
+            File target = new File(pathActual, nombre);
+            
+            if (!target.exists()) {
+                return "No se encuentra el archivo o carpeta " + nombre + ".";
+            }
+            
+            if (borrarRecursivo(target)) {
+                return nombre + " eliminado correctamente.";
+            } else {
+                return "No se pudo eliminar " + nombre + ".";
+            }
+            
+        } catch (SecurityException e) {
+            return "Acceso denegado.";
+        } catch (Exception e) {
+            return "Error: " + e.getMessage();
+        }
         
     }
     
     private boolean borrarRecursivo(File file) {
-       
+        if  (file.isDirectory()) {
+            File [] children = file.listFiles();
+            if (children!=null) {
+                for (File child:children) {
+                    if (!borrarRecursivo(child)) {
+                        return false;
+                    }
+                }
+            }
+        }
+        
     }
     
     public String cd(String nombre) {
+        try {
+            if (nombre == null || nombre.trim().isEmpty()) {
+                return "Error: nombre no válido.";
+            }
+            File nuevaRuta = new File(pathActual, nombre); 
+            if (!nuevaRuta.exists()) {
+                return "El sistema no puede encontrar la ruta especificada.";
+            }
+            if (!nuevaRuta.isDirectory()) {
+                return nombre + "no es un directorio." ;
+            }
+            pathActual=nuevaRuta;
+            return "";
+            
+        
+        } catch (SecurityException e) {
+            return "Acceso denegado.";
+        
+        }catch (Exception e) {
+            return "Error: " + e.getMessage();
+        }
         
     }
 }
