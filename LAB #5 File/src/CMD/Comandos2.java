@@ -4,53 +4,59 @@
  */
 package CMD;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+import java.io.File;
 
 /**
  *
  * @author jerem
  */
 public class Comandos2 extends Comandos1{
-  public Comandos2(){
-      super();
+  public Comandos2(String pathInicial){
+      super(pathInicial);
   }
   public String retroceder(){
+      File dirActual = new File(getPathActual());
+      File dirPadre = dirActual.getParentFile();
       //validacion para cuando no hay a donde retroceder
-      if(/*Ruta Actual*/.equals("C:")){
-      return "ERROR: Ya se encuentra en el directorio principal C:\\";
+      if(dirPadre == null){
+      return "ERROR: Ya se encuentra en el directorio principal";
   }
-      //busca la posicion del ultimo en la ruta actual
-      int separador = /*Ruta Actual*/.lastIndexOf('\\');
-      
-      //corta la ruta desde el inicio haasta donde este el ultimo
-      
-      /*Ruta Actual*/ = /*Ruta Actual*/.substring(0, separador);
-      return "";
+     if(!dirPadre.exists()){
+         return "ERROR: El directorio padre no existe";
+     }
+    
+      return cd("..");
   }
   public String dir(){
-      //muestra lo que hay hasta ahora en el directorio
-      String resultado = " Directorio de "+ /*rutaActual*/ + "\\\n\n";
+      File dirActual = new File(getPathActual());
+      File [] entradas = dirActual.listFiles();
+      String resultado = " Directorio de " + getPathActual() + "\n\n";
+      
+      if(entradas == null || entradas.length == 0){
+          resultado = resultado + "  (directorio vacio)\n";
+          return resultado;
+      }
       int carpetasEncontradas = 0;
       int archivosEncontrados = 0;
       
-      //propablemente el que recorre el posible array de carpetas heredadas de comandos1
-      for (int i = 0; i < /*Carpetas totales*/; i++) {
-          String ruta = /*Rutas de las carpetas*/[i];
+      for (int i = 0; i < entradas.length; i++) {
+          File entrada = entradas[i];
           
-          //ignora la raiz C: y muestra solo las del directorio actual
-          if(!ruta.equals("C:") && /*metodo que revisa rutas que pertenecen al directorio actual*/(ruta)){
-              resultado = resultado + " <DIR>  " + /*Metodo que extrae el nombre final de la ruta completa*/(ruta) + "\n";
+          if(entrada.isDirectory()){
+              resultado = resultado + " <DIR>  " + entrada.getName() + "\n";
               carpetasEncontradas = carpetasEncontradas + 1;
           }
       }
       
        //propablemente el que recorre el posible array de Archivos heredadas de comandos1
-       for (int i = 0; i < /*Archivos totales*/; i++) {
-          String ruta = /*Rutas de los archivos*/[i];
-          
-          //muestra solo los archivos del directorio actual;
-          if (/*metodo que revisa rutas que pertenecen al directorio actual*/(ruta)) {
-              int bytes = /*variable que guarda el contenido de cada archivo*/[i].getBytes().length;
-              resultado = resultado + "      " + /*Metodo que extrae el nombre final de la ruta completa*/(ruta) + "  ("+ bytes + " bytes)\n";
+       for (int i = 0; i < entradas.length; i++) {
+          File entrada = entradas[i];
+         
+          if (entrada.isFile()) {
+              resultado = resultado + "      " + entrada.getName() + "  ("+ entrada.length() + " bytes)\n";
               archivosEncontrados = archivosEncontrados + 1;
                
            }
@@ -66,9 +72,14 @@ public class Comandos2 extends Comandos1{
       return resultado;  
   }
   public String date(){
-      return "";
+      // obtiene la fecha actual y la formatea en espaniol
+      String fecha = new SimpleDateFormat("EEEE dd/MM/yyyy", new Locale("es","ES")).format(new Date());
+      
+      return " La fecha actual es: " + fecha;
   }
   public String time(){
-      return "";
+      //Obtiene la hora actual en formato de 24 horas
+      String hora = new SimpleDateFormat("HH:mm:ss").format(new Date());
+      return " La hora del sistema es: " + hora;
   }
 }
