@@ -14,8 +14,8 @@ public class Comandos1 {
         }
     }
 
-    public String getPathActual() {
-        return pathActual.getAbsolutePath();
+    public File getPathActual() {
+        return pathActual;
     }
 
     public String mkdir(String nombre) {
@@ -120,28 +120,11 @@ public class Comandos1 {
         return file.delete();
     }
 
-    public String cd(String nombre) {
-        try {
-            if (nombre == null || nombre.trim().isEmpty()) {
-                return "Error: nombre no valido.";
-            }
-
-            File nuevaRuta = new File(pathActual, nombre);
-
-            if (!nuevaRuta.exists()) {
-                return "El sistema no puede encontrar la ruta especificada: " + nombre;
-            }
-            if (!nuevaRuta.isDirectory()) {
-                return nombre + " no es un directorio.";
-            }
-
+    public boolean cd(File nuevaRuta) {
+        if (nuevaRuta != null && nuevaRuta.exists() && nuevaRuta.isDirectory()) {
             pathActual = nuevaRuta;
-            return "Directorio actual: " + pathActual.getAbsolutePath();
-
-        } catch (SecurityException e) {
-            return "Acceso denegado al cambiar de directorio.";
-        } catch (Exception e) {
-            return "Error: " + e.getMessage();
+            return true;
         }
+        return false;
     }
 }

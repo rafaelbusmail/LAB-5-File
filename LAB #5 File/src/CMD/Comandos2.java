@@ -69,6 +69,24 @@ public class Comandos2 extends Comandos1 {
     public String time() {
         return LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss"));
     }
+    
+    public String escribirTexto(String nombre, String texto) {
+        File target = new File(pathActual, nombre);
+
+        if (!target.exists()) {
+            return "El archivo no existe.";
+        }
+
+        try (FileWriter fw = new FileWriter(target, false);
+             PrintWriter pw = new PrintWriter(fw)) {
+
+            pw.print(texto);
+            return "Texto escrito correctamente.";
+
+        } catch (IOException e) {
+            return "Error al escribir.";
+        }
+    }
 
     public String leerTexto(String nombre) {
         File target = new File(pathActual, nombre);

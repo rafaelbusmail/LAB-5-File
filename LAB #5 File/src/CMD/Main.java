@@ -9,5 +9,8 @@ package CMD;
  * @author jerem
  */
 public class Main {
-    
+       public static void main(String[] args) {
+        new CMDGUI().setVisible(true);
+    }
+
 }
