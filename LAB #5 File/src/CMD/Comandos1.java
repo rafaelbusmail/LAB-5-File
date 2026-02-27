@@ -123,7 +123,7 @@ public class Comandos1 {
                 }
             }
         }
-        
+        return file.delete();
     }
     
     public String cd(String nombre) {
